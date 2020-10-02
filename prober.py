@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys
 from easysnmp import Session,exceptions
+
 def main(argv):
     if len(argv) == 4:
         print("arguments length passes")
@@ -22,9 +23,13 @@ def main(argv):
     
 
 def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
-    x = []
-    y = []
-    
+    previous = []
+    current = []
+    temp = 0
+    previous_time = 0
+    timeouts = 0
+    rebbots = 0
+        
     print(agent_ip,port,community,sample_freq,samples,oid) 
 
 if __name__ == "__main__":
