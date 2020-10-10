@@ -5,7 +5,6 @@ import sys
 
 def main(argv):
     if len(argv) == 4:
-        print("arguments length passes")
         sys_var = argv[0].split(':')
         if len(sys_var) == 3:
             agent_ip = sys_var[0]
@@ -87,8 +86,6 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
     if reboots>0:
         print('Total number of reboots:',reboots)
             
-
-    print(agent_ip,port,community,sample_freq,samples,oid) 
 
 if __name__ == "__main__":
    main(sys.argv[1:])
