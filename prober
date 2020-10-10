@@ -72,7 +72,7 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
                 else:
                     rates.append(current[x].value)
                 x+=1
-            print (int(request_time),'| '+' | '.join(map(str,rates)))
+            print int(request_time),'|', ''.join(map(str,rates))
             temp+=1        
         rates = [] #clean rates
         previous = current[:]
