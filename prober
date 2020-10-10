@@ -40,6 +40,7 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
             # print("<<<<<current",current)
 
         except exceptions.EasySNMPTimeoutError:
+	    print 'timeouts: ',temp
             temp += 1
             timeout += 1
             continue
@@ -72,7 +73,7 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
                 else:
                     rates.append(current[x].value)
                 x+=1
-            print int(request_time),'|', ''.join(map(str,rates))
+            print int(request_time),'|', ' | '.join(map(str,rates))
             temp+=1        
         rates = [] #clean rates
         previous = current[:]
@@ -82,9 +83,9 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
         else:
             pass
     if timeout>0:
-        print('Total number of timeouts:',timeout)
+        print('Total number of timeouts: ',timeout)
     if reboots>0:
-        print('Total number of reboots:',reboots)
+        print('Total number of reboots: ',reboots)
             
 
 if __name__ == "__main__":
