@@ -4,7 +4,7 @@ from time import time,sleep
 import sys
 
 def main(argv):
-    if len(argv) == 4:
+    if len(argv) >= 4:
         sys_var = argv[0].split(':')
         if len(sys_var) == 3:
             agent_ip = sys_var[0]
@@ -83,9 +83,9 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
         else:
             pass
     if timeout>0:
-        print('Total number of timeouts: ',timeout)
+        print 'Total number of timeouts: ',timeout
     if reboots>0:
-        print('Total number of reboots: ',reboots)
+        print 'Total number of reboots: ',reboots
             
 
 if __name__ == "__main__":
