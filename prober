@@ -1,8 +1,10 @@
 #!/usr/bin/python
+
 from easysnmp import Session,exceptions
 from time import time,sleep
 import sys
 
+#system variables for command line inputs.
 def main(argv):
     if len(argv) >= 4:
         sys_var = argv[0].split(':')
@@ -16,13 +18,15 @@ def main(argv):
             oid +=  argv[3:]
             snmp_prober(agent_ip,port,community,sample_freq,samples,oid)
         else:
-            print("Invalid System details <Agent_Ip:Port:Community>",len(sys_var))
+	    # Print for Agent details missing error.
+            print("Invalid Agent details <Agent_Ip:Port:Community>",len(sys_var))
             sys.exit()
     else:
+	# Print for invalid input format.
         print("Invalid Input Format",len(argv))
         sys.exit()
     
-
+# session call for command line input and assign them to variables. 
 def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
     interval = 1.0/sample_freq
     previous = []
@@ -33,57 +37,70 @@ def snmp_prober(agent_ip,port,community,sample_freq,samples,oid):
     session = Session(hostname=agent_ip,remote_port=port,community=community,version=2)
     previous_time = 0
     rates = []
+    # check samples
     while(temp<samples):
         request_time = time()
         try:
+	    # Send SNMP_GET Request PDU to agent and wait for response.
             current = session.get(oid)
-            # print("<<<<<current",current)
-
         except exceptions.EasySNMPTimeoutError:
+	    # Timeouts
 	    print 'timeouts: ',temp
             temp += 1
             timeout += 1
             continue
         resptime = time()
+	# Check the length of data between two intermediate probes.
         if len(previous) == len(current):
+	    # Time difference between intermediate times.
             timediff = request_time-previous_time
+            # Check for agent reboots.
             if int(current[0].value)-int(previous[0].value)<0:
                 print('Agent Rebooting')
                 reboots += 1
+            # condition for Sample frequency (<=1).
             elif sample_freq<=1 and timediff!=0:
                 timediff = int(timediff)
             elif sample_freq<=1 and timediff==0:
                 timediff = int(interval)
+	    # Set index value (1)
             x = 1
             while x<len(oid):
+		# Calculate rates from obtained snmp values.
                 if current[x].snmp_type!="NOSUCHINSTANCE" and previous[x].snmp_type!="NOSUCHINSTANCE":
                     current_value = int(current[x].value)
                     previous_value = int(previous[x].value)
                     if current_value >= previous_value:
-                        # 
                         rate = (current_value-previous_value)/timediff
                         rates.append(rate)
-                    
+                    # Handle COUNTER64 type (64-bit).
                     elif current[x].snmp_type == "COUNTER64" and previous[x].snmp_type=="COUNTER64":
                             rate = ((2**64+current_value)-previous_value)/timediff
                             rates.append(rate)
+		    # Handle COUNTER type (32-bit).
                     elif current[x].snmp_type == "COUNTER" and previous[x].snmp_type == "COUNTER":
                             rate = ((2**32+current_value)-previous_value)/timediff
                             rates.append(rate)
                 else:
                     rates.append(current[x].value)
                 x+=1
+	    # Print outputs on terminal in a piped format.
             print int(request_time),'|', ' | '.join(map(str,rates))
             temp+=1        
-        rates = [] #clean rates
+        # Clean the list.
+	rates = []
+	# Replace previous list with current list.
         previous = current[:]
-        previous_time = request_time
+        # Replace previous time with current requested time.
+	previous_time = request_time
         if interval>time()-request_time:
             sleep(interval-time()+request_time)
         else:
             pass
+    # Agent timeouts due to unresponsive.
     if timeout>0:
         print 'Total number of timeouts: ',timeout
+    # Agent reboots.
     if reboots>0:
         print 'Total number of reboots: ',reboots
             
