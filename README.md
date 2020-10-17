@@ -1,4 +1,4 @@
-		                                                                                NETWORK PERFORMANCE MONITORING
+		                                              NETWORK PERFORMANCE MONITORING
 
 Description:
 
@@ -53,9 +53,11 @@ Steps to run prober:
 
 •       (OID: OIDs to be probed (they are absolute, cf. IF-MIB::ifInOctets.2 for interface 2, or 1.3.6.1.2.1.2.2.1.10.2 [1]))
 
+
 Sample output:
 
 $ /tmp/snmp-prober/prober Agent-IP:port:public 1 18 OID
+
 1602942345 | 53526001
 
 1602942346 | 53526001
